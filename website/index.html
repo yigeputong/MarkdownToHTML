@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown to HTML</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header>
+      <h1>MarkdownToHTML</h1>
+    </header>
+    <main>
+      <h1>这是 MarkdownToHTML 的项目演示</h1>
+      <small><p>没错，这个项目还有 js 版本! </p></small>
+      <br>
+      <p>在下面输入一段 Markdown 文本，点击"start"按钮，一段 HTML 格式的文本就会出现</p>
+      <!--一个输入框-->
+      <textarea id="input" placeholder="请输入 Markdown 文本"></textarea>
+      <br>
+      <button>start</button>
+      <script>
+        // 点击按钮，将输入框中的文本转换为 HTML 格式
+        document.querySelector('button').addEventListener('click', function() {
+          var input = document.querySelector('#input').value;
+          var output = document.querySelector('#output');
+          output.innerHTML = markdownToHTML(input);
+        });
+        // 将 Markdown 文本转换为 HTML 格式
+        function markdownToHTML(markdown) {
+          // 定义一些 Markdown 语法的正则表达式
+          var headingRegex = /^#{1,6}\s(.+)$/;    // 1-6 级标题
+          var paragraphRegex = /^(.+)$/;          // 段落
+          var listRegex = /^(\*|-)\s(.+)$/;       // 无序列表和有序列表
+          var codeRegex = /^```(.+)$/;            // 代码块
+          var imageRegex = /^!\[(.+)\]\((.+)\)$/; // 图片
+          var linkRegex = /^\[(.+)\]\((.+)\)$/;   // 链接
+          // 将 Markdown 文本按行分割
+          var lines = markdown.split('\n');
+          // 定义一个空字符串，用于存储 HTML 格式的文本
+          var html = '';
+          // 遍历每一行
+          for (var i = 0; i < lines.length; i++) {
+            var line = lines[i];
+            // 判断这一行是否是标题
+            if (headingRegex.test(line)) {
+              var heading = line.match(headingRegex)[1];
+              var level = line.match(headingRegex)[0].length;
+              html += '<h' + level + '>' + heading + '</h' + level + '>';
+            }
+            // 判断这一行是否是段落
+            else if (paragraphRegex.test(line)) {
+              var paragraph = line.match(paragraphRegex)[1];
+              html += '<p>' + paragraph + '</p>';
+            }
+            // 判断这一行是否是列表
+            else if (listRegex.test(line)) {
+              var listItem = line.match(listRegex)[2];
+              html += '<li>' + listItem + '</li>';
+            }
+            // 判断这一行是否是代码块
+            else if (codeRegex.test(line)) {
+              var code = line.match(codeRegex)[1];
+              html += '<pre><code>' + code + '</code></pre>';
+            }
+            // 判断这一行是否是图片
+            else if (imageRegex.test(line)) {
+              var alt = line.match(imageRegex)[1];
+              var src = line.match(imageRegex)[2];
+              html += '<img alt="' + alt + '" src="' + src + '">';
+            }
+            // 判断这一行是否是链接
+            else if (linkRegex.test(line)) {
+              var text = line.match(linkRegex)[1];
+              var href = line.match(linkRegex)[2];
+              html += '<a href="' + href + '">' + text + '</a>';
+            }
+          }
+          // 返回 HTML 格式的文本
+          return html;
+        }
+        console.log(markdownToHTML('# 这是一个标题'));
+      </script>
+    </main>
+  </body>
+</html>
